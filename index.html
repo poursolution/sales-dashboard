@@ -535,34 +535,6 @@
 
 <div class="container">
     <div>
-        <!-- 매출 현황 -->
-        <div class="kpi-section-label">매출 현황</div>
-        <div class="kpi-grid-4">
-            <div class="card highlight purple">
-                <div class="card-title">26년 목표</div>
-                <div class="card-value" id="kpi-target">230.0억</div>
-                <div class="card-sub" id="kpi-target-sub">전년 대비 +60.4%</div>
-            </div>
-            <div class="card highlight blue">
-                <div class="card-title">누적 실매출</div>
-                <div class="card-value" id="kpi-current">4.5억</div>
-                <div class="achievement-progress">
-                    <div class="progress-track"><div class="progress-bar level-red" id="kpi-progress" style="width:2%"></div></div>
-                    <div class="progress-label" id="kpi-progress-label">달성률 2.0%</div>
-                </div>
-            </div>
-            <div class="card orange">
-                <div class="card-title" id="kpi-month-title">당월 현황</div>
-                <div class="card-value" id="kpi-month-value">-</div>
-                <div class="card-sub" id="kpi-month-sub">실적 / 목표</div>
-            </div>
-            <div class="card red">
-                <div class="card-title">목표 잔여</div>
-                <div class="card-value" id="kpi-remaining">225.5억</div>
-                <div class="card-sub" id="kpi-remaining-sub">남은 10개월 평균 22.6억/월</div>
-            </div>
-        </div>
-
         <!-- 공고 현황 -->
         <div class="kpi-section-label">공고 현황</div>
         <div class="kpi-grid-4" id="bidKpiGrid">
@@ -587,47 +559,6 @@
                 <div class="card-title">목표 잔여</div>
                 <div class="card-value" id="bid-remaining">-</div>
                 <div class="card-sub" id="bid-remaining-sub"></div>
-            </div>
-        </div>
-
-        <!-- 항목별 목표 달성 현황 (진척 바) -->
-        <div class="section-box" id="categoryProgressSection">
-            <div class="section-header">
-                <span class="section-title">항목별 목표 달성 현황</span>
-            </div>
-            <div id="categoryProgressBody"></div>
-        </div>
-
-        <!-- 26년 추이 차트 -->
-        <div class="chart-row" style="grid-template-columns:1fr">
-            <div class="chart-container full-width">
-                <div class="chart-header">
-                    <span class="chart-title">26년 추이</span>
-                    <div class="chart-view-toggle">
-                        <button class="chart-view-btn active" onclick="switchMainChart('target',this)">26년 매출</button>
-                        <button class="chart-view-btn" onclick="switchMainChart('yearly',this)">연도별 매출</button>
-                        <button class="chart-view-btn" onclick="switchMainChart('bids',this)">연도별 공고문</button>
-                    </div>
-                </div>
-                <div id="mainChartTarget"><canvas id="monthlyTrendChart" style="max-height:340px !important; height:340px !important;"></canvas></div>
-                <div id="mainChartYearly" style="display:none"><canvas id="yearlyCompareChart" style="max-height:340px !important; height:340px !important;"></canvas></div>
-                <div id="mainChartBids" style="display:none"><canvas id="bidCompareChart" style="max-height:340px !important; height:340px !important;"></canvas></div>
-            </div>
-        </div>
-
-        <!-- 26년 목표 대비 진척 현황 테이블 -->
-        <div class="section-box" id="targetSection">
-            <div class="section-header">
-                <span class="section-title">26년 목표 대비 진척 현황</span>
-                <div class="tbl-toggle">
-                    <button class="tbl-toggle-btn active" onclick="setTableFormat('targetSection','simple',this)">간단히</button>
-                    <button class="tbl-toggle-btn" onclick="setTableFormat('targetSection','detail',this)">상세</button>
-                </div>
-            </div>
-            <div class="table-scroll">
-                <table class="data-table" id="targetTable"><thead><tr>
-                    <th>구분</th><th>실행</th><th>자재</th><th>OBM 자재</th><th>특허료</th><th>기술자문료</th><th class="total-col">총계</th>
-                </tr></thead><tbody id="targetTableBody"></tbody></table>
             </div>
         </div>
 
@@ -1212,10 +1143,7 @@ function setTableFormat(sectionId, mode, btn) {
         else box.classList.remove('detail-mode');
     }
     const renderMap = {
-        'targetSection': renderTargetTable,
         'monthly26Section': renderMonthly26,
-        'monthly25Section': renderMonthly25,
-        'monthly24Section': renderMonthly24,
         'forecastSection': renderForecastTable
     };
     if(renderMap[sectionId]) renderMap[sectionId]();
@@ -1237,36 +1165,6 @@ function loadForecast() {
             Object.keys(p).forEach(k => { if(DATA.forecast26[k]) DATA.forecast26[k]=p[k]; });
         } catch(e){}
     }
-}
-
-// ============================================================
-// KPI
-// ============================================================
-function updateKPIs() {
-    const target = DATA.target26.총계;
-    const current = sum(Array.from({length:12},(_,i)=>mt26(i)));
-    const t25 = sum(Array.from({length:12},(_,i)=>mt25(i)));
-    const forecast = CATS.reduce((s,c)=>s+fcT(c),0);
-    const rate = current/target*100;
-    let lastM=0; for(let i=11;i>=0;i--){if(mt26(i)>0){lastM=i+1;break;}}
-    const remM = 12-lastM;
-    const remaining = target-current;
-
-    document.getElementById('kpi-target').textContent = fmtB(target);
-    document.getElementById('kpi-target-sub').textContent = `전년 대비 +${((target-t25)/t25*100).toFixed(1)}%`;
-    document.getElementById('kpi-current').textContent = fmtB(current);
-    const pb = document.getElementById('kpi-progress');
-    pb.style.width = Math.min(rate,100)+'%';
-    pb.className = 'progress-bar '+(rate<30?'level-red':rate<70?'level-yellow':'level-green');
-    document.getElementById('kpi-progress-label').textContent = `달성률 ${rate.toFixed(1)}%`;
-    const curMonth = new Date().getMonth();
-    const curMonthTarget = DATA.monthlyTarget26[curMonth]||0;
-    const curMonthActual = mt26(curMonth);
-    document.getElementById('kpi-month-title').textContent = `${curMonth+1}월 현황`;
-    document.getElementById('kpi-month-value').textContent = `${fmtB(curMonthActual)} / ${fmtB(curMonthTarget)}`;
-    document.getElementById('kpi-month-sub').textContent = '실적 / 목표';
-    document.getElementById('kpi-remaining').textContent = fmtB(remaining);
-    document.getElementById('kpi-remaining-sub').textContent = remM>0 ? `남은 ${remM}개월 평균 ${fmtB(remaining/remM)}/월` : '';
 }
 
 // ============================================================
@@ -1296,79 +1194,6 @@ function renderBidSummary() {
     document.getElementById('bid-remaining-sub').textContent = remBidM>0 ? `남은 ${remBidM}개월 평균 ${Math.round(bidRemaining/remBidM)}건/월` : '';
 }
 
-function renderCategoryProgress() {
-    const el = document.getElementById('categoryProgressBody');
-    let html = '';
-    CATS.forEach(c => {
-        const target = DATA.target26[c] || 0;
-        const actual = catT26(c);
-        const forecast = fcT(c);
-        const rate = target > 0 ? (actual / target * 100) : 0;
-        const rateWithFc = target > 0 ? ((actual + forecast) / target * 100) : 0;
-        const color = COLORS[c];
-        const rateColor = rate < 10 ? '#dc2626' : rate < 50 ? '#d97706' : '#059669';
-
-        html += `
-        <div class="cat-progress-row">
-            <div class="cat-progress-label">
-                <span class="cat-dot" style="background:${color}"></span>
-                <span>${c}</span>
-            </div>
-            <div class="cat-progress-mid">
-                <div class="cat-progress-bar-wrap">
-                    <div class="cat-progress-fill-bg" style="width:${Math.min(rateWithFc,100)}%; background:${color}; cursor:pointer" title="${c} 예상매출: ${forecast ? fmtB(forecast) : '-'}"></div>
-                    <div class="cat-progress-fill" style="width:${Math.min(rate,100)}%; background:${color}; cursor:pointer" title="${c} 확정매출: ${actual ? fmtB(actual) : '-'}"></div>
-                    <span class="cat-progress-rate-label" style="color:${rateColor}">${rate.toFixed(1)}%</span>
-                </div>
-            </div>
-            <div class="cat-progress-values">
-                <div class="cat-val-item"><span class="cat-val-label">목표</span><span class="cat-val-num">${fmtB(target)}</span></div>
-                <div class="cat-val-item"><span class="cat-val-label">실적</span><span class="cat-val-num highlight">${actual ? fmtB(actual) : '-'}</span></div>
-                <div class="cat-val-item"><span class="cat-val-label">예상</span><span class="cat-val-num">${forecast ? fmtB(forecast) : '-'}</span></div>
-            </div>
-        </div>`;
-    });
-    // 합계
-    const totalTarget = DATA.target26.총계;
-    const totalActual = CATS.reduce((s,c)=>s+catT26(c),0);
-    const totalFc = CATS.reduce((s,c)=>s+fcT(c),0);
-    const totalRate = totalTarget>0 ? (totalActual/totalTarget*100) : 0;
-    const totalRateColor = totalRate < 10 ? '#dc2626' : totalRate < 50 ? '#d97706' : '#059669';
-    html += `
-    <div class="cat-progress-row" style="background:#fefce8; border-radius:4px; margin-top:4px; border:none;">
-        <div class="cat-progress-label" style="font-weight:700;">
-            <span class="cat-dot" style="background:#1e293b"></span>
-            <span>합계</span>
-        </div>
-        <div class="cat-progress-mid">
-            <div class="cat-progress-bar-wrap" style="background:#e2e8f0">
-                <div class="cat-progress-fill" style="width:${Math.min(totalRate,100)}%; background:#1e293b; cursor:pointer" title="합계 확정매출: ${fmtB(totalActual)}"></div>
-                <span class="cat-progress-rate-label" style="color:${totalRateColor}; font-weight:800;">${totalRate.toFixed(1)}%</span>
-            </div>
-        </div>
-        <div class="cat-progress-values">
-            <div class="cat-val-item"><span class="cat-val-label">목표</span><span class="cat-val-num" style="font-weight:700">${fmtB(totalTarget)}</span></div>
-            <div class="cat-val-item"><span class="cat-val-label">실적</span><span class="cat-val-num highlight" style="font-weight:700">${fmtB(totalActual)}</span></div>
-            <div class="cat-val-item"><span class="cat-val-label">예상</span><span class="cat-val-num" style="font-weight:700">${totalFc ? fmtB(totalFc) : '-'}</span></div>
-        </div>
-    </div>`;
-    el.innerHTML = html;
-}
-
-// ============================================================
-// 테이블 렌더링
-// ============================================================
-function renderTargetTable() {
-    numFormat = tableFormats['targetSection'] || 'simple';
-    const b = document.getElementById('targetTableBody');
-    const a = c => catT26(c), f = c => fcT(c);
-    const ta = CATS.reduce((s,c)=>s+a(c),0), tf = CATS.reduce((s,c)=>s+f(c),0);
-    b.innerHTML = `
-        <tr class="target-row"><td>26년 목표</td>${CATS.map(c=>`<td>${fmt(DATA.target26[c])}</td>`).join('')}<td>${fmt(DATA.target26.총계)}</td></tr>
-        <tr><td>실적</td>${CATS.map(c=>`<td>${fmt(a(c))}</td>`).join('')}<td>${fmt(ta)}</td></tr>
-        <tr><td>달성률</td>${CATS.map(c=>{const t=DATA.target26[c]||0,r=t>0?(a(c)/t*100).toFixed(1):'0.0';return `<td style="color:${parseFloat(r)<10?'var(--red)':'var(--green)'};font-weight:600">${r}%</td>`;}).join('')}<td style="color:var(--red);font-weight:600">${(ta/DATA.target26.총계*100).toFixed(1)}%</td></tr>`;
-}
-
 function renderMonthly26() {
     numFormat = tableFormats['monthly26Section'] || 'simple';
     const b = document.getElementById('monthly26Body');
@@ -1386,28 +1211,6 @@ function renderMonthly26() {
         h += `<tr><td>${n}</td>${DATA.year26[k].map(v=>`<td>${fmt(v)}</td>`).join('')}<td>${fmt(sum(DATA.year26[k]))}</td></tr>`;
     });
     h += `<tr class="total-row"><td>합계</td>${Array.from({length:12},(_,i)=>`<td>${fmt(mt26(i))}</td>`).join('')}<td>${fmt(sum(Array.from({length:12},(_,i)=>mt26(i))))}</td></tr>`;
-    b.innerHTML = h;
-}
-
-function renderMonthly25() {
-    numFormat = tableFormats['monthly25Section'] || 'simple';
-    const b = document.getElementById('monthly25Body');
-    let h = `<tr style="background:var(--gray50)"><td>공고문수</td>${DATA.year25.공고문수.map(v=>`<td style="text-align:center">${v}</td>`).join('')}<td style="text-align:center">${sum(DATA.year25.공고문수)}</td></tr>`;
-    [['실행(직영)','실행_직영'],['실행(컨설팅)','실행_컨설팅',true],['자재','자재'],['특허료','특허료'],['기술자문료','기술자문료'],['S/N솔루션','S/N솔루션']].forEach(([n,k,sub])=>{
-        h += `<tr${sub?' class="sub-cat"':''}><td>${n}</td>${DATA.year25[k].map(v=>`<td>${fmt(v)}</td>`).join('')}<td>${fmt(sum(DATA.year25[k]))}</td></tr>`;
-    });
-    h += `<tr class="total-row"><td>합계</td>${Array.from({length:12},(_,i)=>`<td>${fmt(mt25(i))}</td>`).join('')}<td>${fmt(sum(Array.from({length:12},(_,i)=>mt25(i))))}</td></tr>`;
-    b.innerHTML = h;
-}
-
-function renderMonthly24() {
-    numFormat = tableFormats['monthly24Section'] || 'simple';
-    const b = document.getElementById('monthly24Body');
-    let h = `<tr style="background:var(--gray50)"><td>공고문수</td>${DATA.year24.공고문수.map(v=>`<td style="text-align:center">${v}</td>`).join('')}<td style="text-align:center">${sum(DATA.year24.공고문수)}</td></tr>`;
-    ['실행','자재','특허료','기술자문료','S/N솔루션'].forEach(k=>{
-        h += `<tr><td>${k}</td>${DATA.year24[k].map(v=>`<td>${fmt(v)}</td>`).join('')}<td>${fmt(sum(DATA.year24[k]))}</td></tr>`;
-    });
-    h += `<tr class="total-row"><td>합계</td>${Array.from({length:12},(_,i)=>`<td>${fmt(mt24(i))}</td>`).join('')}<td>${fmt(sum(Array.from({length:12},(_,i)=>mt24(i))))}</td></tr>`;
     b.innerHTML = h;
 }
 
@@ -1429,110 +1232,12 @@ function renderForecastTable() {
 }
 
 // ============================================================
-// 차트
-// ============================================================
-let charts = {};
-function dc(id) { if(charts[id]){charts[id].destroy();delete charts[id];} }
-const chartFont = { family: 'Pretendard', size: 11 };
-const chartDefaults = {
-    responsive: true,
-    plugins: { legend: { position:'top', labels: { font: chartFont, boxWidth: 12, padding: 12 } } },
-};
-
-function renderCharts() {
-    const curM = new Date().getMonth(); // 0-indexed current month
-    const act = Array.from({length:12},(_,i)=>+((mt26(i)/1e8).toFixed(2)));
-    const fcs = Array.from({length:12},(_,i)=>+((CATS.reduce((s,c)=>s+(DATA.forecast26[c][i]||0),0)/1e8).toFixed(2)));
-    const tgt = DATA.monthlyTarget26.map(v=>+((v/1e8).toFixed(2)));
-
-    // null out future months for bar charts
-    const actTrim = act.map((v,i) => i<=curM ? v : null);
-    const fcsTrim = fcs.map((v,i) => i<=curM ? v : null);
-
-    const pFont = {family:'Pretendard',size:11};
-    const tooltipStyle = {backgroundColor:'rgba(15,23,42,0.92)',titleFont:{family:'Pretendard',size:12,weight:'600'},bodyFont:{family:'Pretendard',size:11},cornerRadius:6,padding:{x:12,y:8},boxPadding:4, callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}억`}};
-    const legendStyle = {position:'top',align:'end',labels:{font:pFont,usePointStyle:true,pointStyle:'circle',padding:14,boxWidth:7,color:'#64748b'}};
-    const yAxis = (label) => ({border:{display:false},grid:{color:'rgba(226,232,240,0.6)',drawTicks:false},title:{display:true,text:label,font:{size:10,family:'Pretendard',weight:'500'},color:'#94a3b8',padding:{bottom:4}},ticks:{font:{size:10,family:'Pretendard'},color:'#94a3b8',padding:8}});
-    const xAxis = {border:{display:false},grid:{display:false},ticks:{font:pFont,color:'#64748b',padding:4}};
-
-    // ── 26년 월별 추이 (실적 + 예상 + 목표선) ──
-    dc('mt');
-    charts['mt'] = new Chart(document.getElementById('monthlyTrendChart'), {
-        type:'bar',
-        data:{ labels:MONTHS, datasets:[
-            { label:'실적', data:actTrim, backgroundColor:'#3b82f6', hoverBackgroundColor:'#2563EB', borderRadius:5, borderSkipped:false, order:2, barPercentage:0.5, categoryPercentage:0.7 },
-            { label:'예상매출', data:fcsTrim, backgroundColor:'#bfdbfe', hoverBackgroundColor:'#93c5fd', borderRadius:5, borderSkipped:false, order:3, barPercentage:0.5, categoryPercentage:0.7 },
-            { label:'월별 목표', data:tgt, type:'line', borderColor:'#ef4444', borderWidth:2, pointRadius:3, pointBackgroundColor:'#fff', pointBorderColor:'#ef4444', pointBorderWidth:2, fill:false, order:1, tension:0.35 }
-        ]},
-        options:{responsive:true, maintainAspectRatio:false,
-            plugins:{legend:legendStyle, tooltip:tooltipStyle},
-            scales:{y:yAxis('억원'), x:xAxis}
-        }
-    });
-
-    // ── 연도별 비교 (월별 바 차트: 25년, 26년, 26년 목표) ──
-    dc('yc');
-    const m25 = Array.from({length:12},(_,i)=>+((mt25(i)/1e8).toFixed(2)));
-    const m26 = act.map((v,i) => i<=curM ? v : null);
-
-    charts['yc'] = new Chart(document.getElementById('yearlyCompareChart'), {
-        type:'bar',
-        data:{ labels:MONTHS, datasets:[
-            { label:'25년', data:m25, backgroundColor:'#34d399', hoverBackgroundColor:'#10b981', borderRadius:5, borderSkipped:false, order:2, barPercentage:0.5, categoryPercentage:0.7 },
-            { label:'26년', data:m26, backgroundColor:'#3b82f6', hoverBackgroundColor:'#2563EB', borderRadius:5, borderSkipped:false, order:3, barPercentage:0.5, categoryPercentage:0.7 },
-            { label:'26년 목표', data:tgt, type:'line', borderColor:'#ef4444', borderWidth:2, borderDash:[6,4], pointRadius:3, pointBackgroundColor:'#fff', pointBorderColor:'#ef4444', pointBorderWidth:2, fill:false, order:1, tension:0.35 }
-        ]},
-        options:{responsive:true, maintainAspectRatio:false,
-            plugins:{legend:legendStyle, tooltip:tooltipStyle},
-            scales:{y:yAxis('억원'), x:xAxis}
-        }
-    });
-
-    // ── 연도별 공고문 비교 (25년 공고문, 26년 현재 공고문, 26년 공고문 목표) ──
-    dc('bc');
-    const bids25 = DATA.year25.공고문수;
-    const bids26 = DATA.actualBids26.map((v,i) => i<=curM ? v : null);
-    const bidTarget26 = DATA.targetBids26;
-
-    const tooltipStyleBids = {backgroundColor:'rgba(15,23,42,0.92)',titleFont:{family:'Pretendard',size:12,weight:'600'},bodyFont:{family:'Pretendard',size:11},cornerRadius:6,padding:{x:12,y:8},boxPadding:4, callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}건`}};
-
-    charts['bc'] = new Chart(document.getElementById('bidCompareChart'), {
-        type:'bar',
-        data:{ labels:MONTHS, datasets:[
-            { label:'25년 공고문', data:bids25, backgroundColor:'#34d399', hoverBackgroundColor:'#10b981', borderRadius:5, borderSkipped:false, order:2, barPercentage:0.5, categoryPercentage:0.7 },
-            { label:'26년 공고문', data:bids26, backgroundColor:'#3b82f6', hoverBackgroundColor:'#2563EB', borderRadius:5, borderSkipped:false, order:3, barPercentage:0.5, categoryPercentage:0.7 },
-            { label:'26년 목표', data:bidTarget26, type:'line', borderColor:'#ef4444', borderWidth:2, borderDash:[6,4], pointRadius:3, pointBackgroundColor:'#fff', pointBorderColor:'#ef4444', pointBorderWidth:2, fill:false, order:1, tension:0.35 }
-        ]},
-        options:{responsive:true, maintainAspectRatio:false,
-            plugins:{legend:legendStyle, tooltip:tooltipStyleBids},
-            scales:{y:{...yAxis('건'), ticks:{...yAxis('건').ticks, stepSize:20}}, x:xAxis}
-        }
-    });
-
-}
-
-// ============================================================
-// 차트 뷰 토글
-// ============================================================
-function switchMainChart(view, btn) {
-    btn.parentElement.querySelectorAll('.chart-view-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('mainChartTarget').style.display = view==='target' ? '' : 'none';
-    document.getElementById('mainChartYearly').style.display = view==='yearly' ? '' : 'none';
-    document.getElementById('mainChartBids').style.display = view==='bids' ? '' : 'none';
-}
-
-// ============================================================
 // 전체 렌더링
 // ============================================================
 function renderAll() {
-    updateKPIs();
     renderBidSummary();
-    renderCategoryProgress();
-    renderTargetTable();
     renderMonthly26();
     renderForecastTable();
-    renderCharts();
 }
 
 // 초기화
