@@ -579,6 +579,28 @@
             </div>
         </div>
 
+        <!-- 26년 목표 대비 진척 현황 (카테고리별 + 월별 목표금액/공고 통합) -->
+        <div class="section-box" id="targetSection">
+            <div class="section-header">
+                <span class="section-title">26년 목표 대비 진척 현황</span>
+                <div class="tbl-toggle">
+                    <button class="tbl-toggle-btn active" onclick="setTableFormat('targetSection','simple',this)">간단히</button>
+                    <button class="tbl-toggle-btn" onclick="setTableFormat('targetSection','detail',this)">상세</button>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table class="data-table" id="targetTable"><thead><tr>
+                    <th>구분</th><th>실행</th><th>자재</th><th>OBM 자재</th><th>특허료</th><th>기술자문료</th><th class="total-col">총계</th>
+                </tr></thead><tbody id="targetTableBody"></tbody></table>
+            </div>
+            <div class="table-scroll" style="margin-top:16px">
+                <table class="data-table monthly-tbl"><thead><tr>
+                    <th>구분</th><th>1월</th><th>2월</th><th>3월</th><th>4월</th><th>5월</th><th>6월</th>
+                    <th>7월</th><th>8월</th><th>9월</th><th>10월</th><th>11월</th><th>12월</th><th class="total-col">총계</th>
+                </tr></thead><tbody id="monthly26Body"></tbody></table>
+            </div>
+        </div>
+
         <!-- 항목별 목표 달성 현황 (진척 바) -->
         <div class="section-box" id="categoryProgressSection">
             <div class="section-header">
@@ -601,28 +623,6 @@
                 <div id="mainChartTarget" style="display:none"><canvas id="monthlyTrendChart" style="max-height:340px !important; height:340px !important;"></canvas></div>
                 <div id="mainChartYearly" style="display:none"><canvas id="yearlyCompareChart" style="max-height:340px !important; height:340px !important;"></canvas></div>
                 <div id="mainChartBids"><canvas id="bidCompareChart" style="max-height:340px !important; height:340px !important;"></canvas></div>
-            </div>
-        </div>
-
-        <!-- 26년 목표 대비 진척 현황 (카테고리별 + 월별 목표금액/공고 통합) -->
-        <div class="section-box" id="targetSection">
-            <div class="section-header">
-                <span class="section-title">26년 목표 대비 진척 현황</span>
-                <div class="tbl-toggle">
-                    <button class="tbl-toggle-btn active" onclick="setTableFormat('targetSection','simple',this)">간단히</button>
-                    <button class="tbl-toggle-btn" onclick="setTableFormat('targetSection','detail',this)">상세</button>
-                </div>
-            </div>
-            <div class="table-scroll">
-                <table class="data-table" id="targetTable"><thead><tr>
-                    <th>구분</th><th>실행</th><th>자재</th><th>OBM 자재</th><th>특허료</th><th>기술자문료</th><th class="total-col">총계</th>
-                </tr></thead><tbody id="targetTableBody"></tbody></table>
-            </div>
-            <div class="table-scroll" style="margin-top:16px">
-                <table class="data-table monthly-tbl"><thead><tr>
-                    <th>구분</th><th>1월</th><th>2월</th><th>3월</th><th>4월</th><th>5월</th><th>6월</th>
-                    <th>7월</th><th>8월</th><th>9월</th><th>10월</th><th>11월</th><th>12월</th><th class="total-col">총계</th>
-                </tr></thead><tbody id="monthly26Body"></tbody></table>
             </div>
         </div>
     </div>
